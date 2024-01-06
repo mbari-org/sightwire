@@ -1,0 +1,17 @@
+FROM nginx:latest
+
+ARG USER_ID=11472
+ARG GROUP_ID=716
+
+# Custom docker user
+RUN groupadd -r --gid $GROUP_ID docker && \
+    useradd -r --uid $USER_ID -g docker docker_user && \
+    chmod -R 777 /var/cache/nginx && \
+    chmod -R 777 /var/run
+
+USER docker_user
+
+EXPOSE 80
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"];

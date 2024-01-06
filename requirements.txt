@@ -1,0 +1,10 @@
+compas_lcmtypes==0.1.0
+lcmlog-py==0.1.0
+click
+tator==1.2.3
+imagecodecs
+pandas
+python-dotenv
+opencv-contrib-python
+moviepy
+piexif

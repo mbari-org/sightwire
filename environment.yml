@@ -1,0 +1,10 @@
+
+name: sightwire
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.9
+  - pip>=20.1.1
+  - pip:
+    - -r requirements.txt
