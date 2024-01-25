@@ -39,11 +39,11 @@ cd tator && make superuser
   
 Open browser to your local tator instance and create a new (not superuser) user
 
-http://localhost:8080/registration
+[http://localhost:8080/registration](http://localhost:8080/registration)
  
 Use that new user to login and create a new project called e.g. **902204-CoMPAS** with no presets.
 
-http://localhost:8080/accounts/login
+[http://localhost:8080/accounts/login](http://localhost:8080/accounts/login)
 
 ![tatornewproject](./imgs/newproject.png)
 
