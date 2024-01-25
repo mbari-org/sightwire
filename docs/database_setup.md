@@ -28,7 +28,7 @@ When this completes, you should see something like the following output:
  ⠿ Container nginx              Started                                                                                                                                                                                                                                                                                                                                                                                                                                    2.0s
  ⠿ Container gunicorn-cron      Started                                                                                                                                                                                                                                                                                                                                                                                                                                    1.9s
  ⠿ Container migrate            Started
- ````
+ ```
 
 Now that the containers are running, you can create a *superuser* to use for management of the database.  This is a one-time operation.
 
