@@ -26,16 +26,15 @@ export GROUP_ID=$(id -g)
 if [ ! -d "$SCRIPT_DIR/tator" ]; then
   # Clone the tator repository with submodules
   git clone --recurse-submodules https://github.com/cvisionai/tator $BASE_DIR/tator
-# This cb7e29084d341cbf9cceb61fdd7ef367646925f2 is the commit hash for the tator
-# version on mantis.shore.mbari.org; latest version of tator is ok for development
-#  cd $BASE_DIR/tator &&  git checkout cb7e29084d341cbf9cceb61fdd7ef367646925f2 --recurse-submodules
 fi
 
 # Copy docker setup files
 cp $SCRIPT_DIR/nginx.conf.template $BASE_DIR/tator/nginx.conf.template
 cp $SCRIPT_DIR/compose.yaml $BASE_DIR/tator/compose.yaml
 cp $SCRIPT_DIR/Dockerfile.nginx $BASE_DIR/tator/Dockerfile.nginx
-cp $BASE_DIR/tator/example-env $BASE_DIR/tator/.env
+if [ ! -e  "$BASE_DIR/tator/.env" ]; then
+  cp $BASE_DIR/tator/example-env $BASE_DIR/tator/.env
+fi
 
 # Bring up the tator docker containers with the new environment
 cd $BASE_DIR/tator && make tator
