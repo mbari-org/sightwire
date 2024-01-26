@@ -62,6 +62,7 @@ export TATOR_PROJECT=902204-CoMPAS
 Initialize the database
 ```shell
 cd ../sightwire
+export PYTHONPATH=$PWD
 python sightwire database init
 ```
 Should see something like:
