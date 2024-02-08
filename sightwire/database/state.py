@@ -1,7 +1,9 @@
-import logging
-
+# sightwire, Apache-2.0 license
+# Filename: database/state.py
+# Description: State type functions
 from tator.openapi.tator_openapi import TatorApi
 
+from sightwire.database.data_types import PLATFORM_LIST, CAMERA_LIST, SIDE_LIST
 from sightwire.logger import info
 
 
@@ -18,41 +20,11 @@ def create_types(tator_api: TatorApi, project: int) -> None:
 
     media_types = tator_api.get_media_type_list(project=project)
     media_type_ids = [media_type.id for media_type in media_types]
+    image_media_type = [media_type for media_type in media_types if media_type.name == "Image"]
+    assert len(image_media_type) == 1
     info(f"Found {len(media_type_ids)} media types")
 
-    spec = {
-        "name": "Experiment",
-        "description": "Media associated state type for experiments at the frame level",
-        "dtype": "state",
-        "association": "Frame",
-        "visible": True,
-        "grouping_default": False,
-        "media_types": media_type_ids,
-        "attribute_types": [
-            {
-                "name": "iso_datetime",
-                "dtype": "datetime",
-            },
-            {
-                "name": "timestamp",
-                "dtype": "int",
-            },
-            {
-                "name": "depth",
-                "dtype": "int",
-            },
-            {
-                "name": "position",
-                "dtype": "geopos",
-                "default": [36.75276, -122.056],
-            }
-        ]
-    }
-
-    response = tator_api.create_state_type(project=project, state_type_spec=spec)
-    logging.info(response)
-
-    # Create the localization-associated state type
+    # Create the localization-associated state type an associate to both Image and Video media types
     spec = {
         "name": "Box",
         "description": "Localization associated state type from object detection models",
@@ -76,19 +48,58 @@ def create_types(tator_api: TatorApi, project: int) -> None:
     response = tator_api.create_state_type(project=project, state_type_spec=spec)
     info(response)
 
+    # Create the Stereo state type an associate to the Image media type
     spec = {
-        "name": "Saliency Localization",
-        "description": "Localization associated state type from saliency models",
+        "name": "Stereo",
+        "description": "Stereo state type for associating images generated from a stereo camera",
         "dtype": "state",
-        "association": "Localization",
+        "association": "Media",
         "visible": True,
         "grouping_default": False,
-        "media_types": media_type_ids,
-        "attribute_types": [
+        "media_types": [image_media_type[0].id],
+         "attribute_types": [
             {
-                "name": "score",
-                "dtype": "int",
+                "name": "iso_datetime",
+                "dtype": "datetime",
+                "visible": True,
             },
+            {
+                "name": "depth",
+                "dtype": "float",
+                "visible": True,
+            },
+            {
+                "name": "latitude",
+                "dtype": "float",
+                "visible": True,
+                "default": 36.6484
+            },
+            {
+                "name": "longitude",
+                "dtype": "float",
+                "visible": True,
+                "default": 121.8969
+            },
+            {
+                "name": "platform",
+                "dtype": "enum",
+                "visible": True,
+                "default": "MINI_ROV",
+                "choices": PLATFORM_LIST,
+                "labels": PLATFORM_LIST
+            },
+            {
+                "name": "camera",
+                "dtype": "enum",
+                "visible": True,
+                "choices": CAMERA_LIST,
+                "labels": CAMERA_LIST
+            },
+            {
+                "name": "mission",
+                "dtype": "string",
+                "visible": True,
+            }
         ]
     }
 

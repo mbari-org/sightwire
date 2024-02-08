@@ -5,6 +5,18 @@ services:
   ###################################################################
   # Dependencies
   ###################################################################
+  nginx_live:
+    image: bluenviron/mediamtx
+    container_name: nginx_live
+    ports:
+      - "8554:8554"
+      - "1935:1935"
+    environment:
+      - RTSP_RTMPENABLE=yes
+      - RTSP_PROTOCOLS=tcp
+    networks:
+      - public
+    restart: always
   nginx:
     build:
       context: .
@@ -16,7 +28,7 @@ services:
     depends_on:
       - gunicorn
     ports:
-      - ${PORT}:80
+      - "80:80"
     env_file:
       - ./.env
     networks:
@@ -24,9 +36,10 @@ services:
       - public
     privileged: true
     volumes:
-      - ./nginx.conf.template:/etc/nginx/conf.d/default.conf
+      - ./nginx.conf:/etc/nginx/default.conf
       - ${COMPAS_DIR}:/compas
       - ${DATA_DIR}/media:/media
+    restart: always
 
   minio:
     image: minio/minio:RELEASE.2020-12-03T05-49-24Z
@@ -50,9 +63,11 @@ services:
     restart: always
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 1s
+      interval: 60s
       timeout: 3s
       retries: 30
+    ports:
+      - "6379:6379"
     networks:
       - private
     entrypoint: redis-server --maxmemory 2048mb --maxmemory-policy allkeys-lru
@@ -70,13 +85,14 @@ services:
     environment:
       - PGDATA=/var/lib/postgresql/data/db-files
       - POSTGRES_DB=tator_online
+      - POSTGRES_INITDB_WALDIR=/var/lib/postgresql/waldir/wal_files
     networks:
       - private
     volumes:
       - ${DATA_DIR}/postgis:/var/lib/postgresql/data
       - ${DATA_DIR}/backup:/backup
+      - ${WAL_DIR}:/var/lib/postgresql/waldir
     shm_size: '2gb'
-
   ###################################################################
   # Tator services
   ###################################################################
@@ -146,9 +162,9 @@ services:
     networks:
       - private
 
-  image-worker:
+  image-worker1:
     image: ${REGISTRY}/tator_online:${GIT_VERSION}
-    container_name: image-worker
+    container_name: image-worker1
     entrypoint: python3 /tator_online/main/worker.py image_jobs
     depends_on:
       - redis
@@ -159,7 +175,72 @@ services:
       - ./.env
     networks:
       - private
+    volumes:
+      - ./api:/tator_online
 
+  image-worker2:
+    image: ${REGISTRY}/tator_online:${GIT_VERSION}
+    container_name: image-worker2
+    entrypoint: python3 /tator_online/main/worker.py image_jobs
+    depends_on:
+      - redis
+    restart: always
+    environment:
+      - "DEFAULT_LIVE_CONFIG={\"aws_access_key_id\": \"${DEFAULT_LIVE_ACCESS_KEY}\", \"aws_secret_access_key\": \"${DEFAULT_LIVE_SECRET_KEY}\", \"endpoint_url\": \"${DEFAULT_LIVE_ENDPOINT_URL}\", \"region_name\": \"${DEFAULT_LIVE_REGION_NAME}\"}"
+    env_file:
+      - ./.env
+    networks:
+      - private
+    volumes:
+      - ./api:/tator_online
+
+  image-worker3:
+    image: ${REGISTRY}/tator_online:${GIT_VERSION}
+    container_name: image-worker3
+    entrypoint: python3 /tator_online/main/worker.py image_jobs
+    depends_on:
+      - redis
+    restart: always
+    environment:
+      - "DEFAULT_LIVE_CONFIG={\"aws_access_key_id\": \"${DEFAULT_LIVE_ACCESS_KEY}\", \"aws_secret_access_key\": \"${DEFAULT_LIVE_SECRET_KEY}\", \"endpoint_url\": \"${DEFAULT_LIVE_ENDPOINT_URL}\", \"region_name\": \"${DEFAULT_LIVE_REGION_NAME}\"}"
+    env_file:
+      - ./.env
+    networks:
+      - private
+    volumes:
+      - ./api:/tator_online
+
+  image-worker4:
+    image: ${REGISTRY}/tator_online:${GIT_VERSION}
+    container_name: image-worker4
+    entrypoint: python3 /tator_online/main/worker.py image_jobs
+    depends_on:
+      - redis
+    restart: always
+    environment:
+      - "DEFAULT_LIVE_CONFIG={\"aws_access_key_id\": \"${DEFAULT_LIVE_ACCESS_KEY}\", \"aws_secret_access_key\": \"${DEFAULT_LIVE_SECRET_KEY}\", \"endpoint_url\": \"${DEFAULT_LIVE_ENDPOINT_URL}\", \"region_name\": \"${DEFAULT_LIVE_REGION_NAME}\"}"
+    env_file:
+      - ./.env
+    networks:
+      - private
+    volumes:
+      - ./api:/tator_online
+
+  image-worker5:
+    image: ${REGISTRY}/tator_online:${GIT_VERSION}
+    container_name: image-worker5
+    entrypoint: python3 /tator_online/main/worker.py image_jobs
+    depends_on:
+      - redis
+    restart: always
+    environment:
+      - "DEFAULT_LIVE_CONFIG={\"aws_access_key_id\": \"${DEFAULT_LIVE_ACCESS_KEY}\", \"aws_secret_access_key\": \"${DEFAULT_LIVE_SECRET_KEY}\", \"endpoint_url\": \"${DEFAULT_LIVE_ENDPOINT_URL}\", \"region_name\": \"${DEFAULT_LIVE_REGION_NAME}\"}"
+    env_file:
+      - ./.env
+    networks:
+      - private
+    volumes:
+      - ./api:/tator_online
   ###################################################################
   # Pre-install configuration
   ###################################################################

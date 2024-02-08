@@ -1,17 +1,16 @@
-FROM nginx:latest
+FROM nginx:1.23.3
 
-ARG USER_ID=11472
-ARG GROUP_ID=716
+ARG USER_ID
+ARG GROUP_ID
 
-# Custom docker user
+# MBARI docker user
 RUN groupadd -r --gid $GROUP_ID docker && \
     useradd -r --uid $USER_ID -g docker docker_user && \
     chmod -R 777 /var/cache/nginx && \
     chmod -R 777 /var/run
 
 USER docker_user
+EXPOSE 80 8080 443
 
-EXPOSE 80
-
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"];
+# Start in the foreground with a specific file
+CMD ["nginx", "-g", "daemon off;", "-c", "/etc/nginx/default.conf"];

@@ -3,11 +3,19 @@
 
 This will start a local instance of the TATOR database and UI with a volume mount to the compas data directory. 
 
-Make sure you have the volume mounted to the compas data directory.  Here, it is mounted at /Volumes/compas
-This can also be a local directory.
+## Prerequisites
+Setup the path to the compas data directory in the .env file.  This is the directory where the compas data is stored.  
+
+in .env file, e.g.:
+
+```.env
+COMPAS_DIR=/mnt/compas
+```
+ 
+Start the TATOR database and UI with the following command:
 
 ```shell
-./scripts/docker_start.sh  /mnt/compas
+./scripts/docker_start.sh
 ```
 
 When this completes, you should see something like the following output:

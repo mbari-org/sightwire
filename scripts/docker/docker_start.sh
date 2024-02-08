@@ -4,20 +4,7 @@ set -x
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BASE_DIR="$(cd "$(dirname "${SCRIPT_DIR}/../../.." )" && pwd )"
 
-# The first argument is the mount point
-if [ -z "$1" ]; then
-  echo "Usage: $0 <mount point>"
-  exit 1
-fi
-
-# Check if the mount point exists
-if [ ! -d "$1" ]; then
-  echo "Mount point $1 does not exist"
-  exit 1
-fi
-
 # Set environment variables for customizing the docker image
-export COMPAS_DIR=$1
 export SCRIPT_DIR=$SCRIPT_DIR
 export USER_ID=$(id -u)
 export GROUP_ID=$(id -g)
@@ -29,11 +16,14 @@ if [ ! -d "$SCRIPT_DIR/tator" ]; then
 fi
 
 # Copy docker setup files
-cp $SCRIPT_DIR/nginx.conf.template $BASE_DIR/tator/nginx.conf.template
-cp $SCRIPT_DIR/compose.yaml $BASE_DIR/tator/compose.yaml
-cp $SCRIPT_DIR/Dockerfile.nginx $BASE_DIR/tator/Dockerfile.nginx
+cp $SCRIPT_DIR/nginx.conf  $BASE_DIR/tator/
+cp $SCRIPT_DIR/compose.yaml $BASE_DIR/tator/
+cp $SCRIPT_DIR/Dockerfile.nginx $BASE_DIR/tator/
+cp $SCRIPT_DIR/Makefile $BASE_DIR/tator/
+# Overwrite the media.py file with the custom one
+cp $SCRIPT_DIR/media.py $BASE_DIR/tator/api/main/rest/media.py
 if [ ! -e  "$BASE_DIR/tator/.env" ]; then
-  cp $BASE_DIR/tator/example-env $BASE_DIR/tator/.env
+  cp $SCRIPT_DIR/example-env $BASE_DIR/tator/.env
 fi
 
 # Bring up the tator docker containers with the new environment

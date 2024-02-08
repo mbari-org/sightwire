@@ -6,7 +6,9 @@ from pathlib import Path
 
 import click
 
-from sightwire.loaders import commands as loaders
+from loaders.capture_load_livestream import capture_livestream
+from loaders.image import load_image
+from loaders.video import load_video, create_stereo_view
 from sightwire.converters import commands as converters
 from sightwire.database import commands as database
 from sightwire.logger import info, err, create_logger_file
@@ -62,9 +64,10 @@ def cli_load():
 
 
 cli.add_command(cli_load)
-cli_load.add_command(loaders.load_image)
-cli_load.add_command(loaders.load_video)
-cli_load.add_command(loaders.create_stereo_view)
+cli_load.add_command(load_image)
+cli_load.add_command(load_video)
+cli_load.add_command(create_stereo_view)
+cli_load.add_command(capture_livestream)
 
 if __name__ == '__main__':
     try:

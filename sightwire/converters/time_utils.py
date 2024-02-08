@@ -28,7 +28,7 @@ def convert_timestamp_to_datetime_16(timestamp: str) -> datetime:
     return datetime.fromtimestamp(seconds)
 
 
-def search_nearest(depth_log: Path, position_log: Path, image_list: List[Path], max_images: int) -> pd.DataFrame:
+def assign_nearest(depth_log: Path, position_log: Path, image_list: List[Path], max_images: int) -> pd.DataFrame:
     """
     Find the nearest depth and position for a given image or a pair of images
     :param image_list: Path to the image list file
@@ -41,7 +41,7 @@ def search_nearest(depth_log: Path, position_log: Path, image_list: List[Path], 
         info(f'No images found in {image_list}')
         assert False
 
-    # Combine the images into a single dataframe
+    # Combine the images into a single dnataframe
     left_images = [item for item in image_list if "_LEFT" in item.as_posix() or "_L" in item.as_posix()]
     right_images = [item for item in image_list if "_RIGHT" in item.as_posix() or "_R" in item.as_posix()]
 
@@ -70,15 +70,17 @@ def search_nearest(depth_log: Path, position_log: Path, image_list: List[Path], 
             df['iso_datetime'] = df['image'].apply(lambda x: convert_timestamp_to_datetime_16(x.stem))
 
     if stereo:
-        # Allow time difference tolerance (600 milliseconds) for the nearest depth and position between the left and
+        # Allow time difference tolerance (500 milliseconds) for the nearest depth and position between the left and
         # right images
-        tolerance = pd.Timedelta('600ms')
+        tolerance = pd.Timedelta('500ms')
         df = pd.merge_asof(df_left, df_right, on='iso_datetime', direction='nearest', tolerance=tolerance)
         df.sort_values(by=['iso_datetime'], inplace=True)
         df.reset_index(inplace=True)
+        # Drop any rows with NaN values
+        df.dropna(inplace=True)
 
     # Limit the number of images to process
-    if max_images > 0:
+    if max_images and max_images > 0:
         df = df.head(max_images)
 
     # Add columns for depth and position

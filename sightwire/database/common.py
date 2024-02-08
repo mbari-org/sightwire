@@ -22,6 +22,7 @@ def init_api_project(host: str, token: str, project: str) -> (TatorApi, tator.mo
 
     info(f'Searching for project {project}.')
     tator_project = find_project(api, project)
+    info(f'Found project {tator_project.name} with id {tator_project.id}')
     if tator_project is None:
         raise f'Could not find project {project}'
 
@@ -35,6 +36,7 @@ def find_project(api: TatorApi, project_name: str) -> tator.models.Project:
     :param project_name: Name of the project
     """
     projects = api.get_project_list()
+    info(f'Found {len(projects)} projects')
     for p in projects:
         if p.name == project_name:
             return p
@@ -54,15 +56,16 @@ def find_box_type(api: TatorApi, project: int) -> tator.models.LocalizationType:
     return None
 
 
-def find_state_type(api: TatorApi, project: int) -> tator.models.StateType:
+def find_state_type(api: TatorApi, project: int, type_name: str) -> tator.models.StateType:
     """
     Find the state type for the given project
     :param api: :class:`TatorApi` object
     :param project: project ID
+    :param type_name: Name of the state type
     """
     types = api.get_state_type_list(project=project)
     for t in types:
-        if t.name == 'Submission':
+        if t.name == type_name:
             return t
     return None
 
