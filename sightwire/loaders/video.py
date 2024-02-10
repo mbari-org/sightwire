@@ -160,7 +160,7 @@ def create_stereo_view(host: str, token: str, project: str, input_left: str, inp
 
     # Combine the names of the two images to create a new name
     # Create a name using the left keeping everything to the left of _LEFT
-    vid_out = f'{left_media.name.split('_LEFT')[0]}'
+    vid_out = f"{left_media.name.split('_LEFT')[0]}"
     section = type_name
     # Create attribute for multi-stream
     try:
