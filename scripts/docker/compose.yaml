@@ -57,6 +57,20 @@ services:
     volumes:
       - ${DATA_DIR}/objects:/data
 
+  redists:
+    image: redis/redis-stack-server
+    container_name: redists
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 60s
+      timeout: 3s
+      retries: 30
+    ports:
+      - "6380:6379"
+    networks:
+      - public
+
   redis:
     image: redis:6
     container_name: redis

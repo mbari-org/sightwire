@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # Create a live stream from a set of images using ffmpeg
 # This is useful for testing real-time image capture
-# Usage: ./create_livestream.sh localhost /mnt/compas
-set -x
+# Usage: ./run_livestream.sh localhost /mnt/compas
+#set -x
 # Get the script directory and its parent
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BASE_DIR="$(cd "$(dirname "${SCRIPT_DIR}/../.." )" && pwd )"
 
 # Should be at least 2 arguments
 if [ ! $# -eq 2 ]; then
-    echo "No arguments supplied.  Usage: ./create_livestream.sh localhost /mnt/compas"
+    echo "No arguments supplied.  Usage: ./run_livestream.sh localhost /mnt/compas"
     exit 1
 fi
 HOST_NAME=$1
@@ -22,9 +22,10 @@ MP4_VID_DIR=$BASE_DIR/tator/compas_live/live
 
 mkdir -p $MP4_VID_DIR
 
-for side in [ L R ]; do
+for side in L R; do
   MP4_VID=$MP4_VID_DIR/PROSILICA_$side.mp4
   if [ ! -f $MP4_VID ]; then
+    echo "Creating live streamable video $MP4_VID"
     # Create a streamable video from a set of images
     echo ffmpeg -framerate 5 \
     -pattern_type glob \
@@ -41,7 +42,8 @@ MP4_VID_L=$MP4_VID_DIR/PROSILICA_L.mp4
 MP4_VID_R=$MP4_VID_DIR/PROSILICA_R.mp4
 while true;
 do
+  echo "Restarting live stream" rtmp://$HOST_NAME:1935/streaml and rtmp://$HOST_NAME:1935/streamr
   # Right it slightly longer, so background the left stream and wait for the right to finish to simulate sync
-  ffmpeg -re -i $MP4_VID_L -c copy -f flv rtmp://$HOST_NAME:1935/streaml &
-  ffmpeg -re -i $MP4_VID_R -c copy -f flv rtmp://$HOST_NAME:1935/streamr
+  ffmpeg -v error -re -i $MP4_VID_L -c copy -f flv rtmp://$HOST_NAME:1935/streaml &
+  ffmpeg -v error -re -i $MP4_VID_R -c copy -f flv rtmp://$HOST_NAME:1935/streamr
 done

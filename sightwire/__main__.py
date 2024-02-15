@@ -6,9 +6,10 @@ from pathlib import Path
 
 import click
 
-from loaders.capture_load_livestream import capture_livestream
-from loaders.image import load_image
-from loaders.video import load_video, create_stereo_view
+from loaders.watchdog import run_watchdog
+from sightwire.misc.capture_livestream import capture_livestream
+from sightwire.loaders.image import load_image
+from sightwire.loaders.video import load_video, create_stereo_view
 from sightwire.converters import commands as converters
 from sightwire.database import commands as database
 from sightwire.logger import info, err, create_logger_file
@@ -67,7 +68,17 @@ cli.add_command(cli_load)
 cli_load.add_command(load_image)
 cli_load.add_command(load_video)
 cli_load.add_command(create_stereo_view)
-cli_load.add_command(capture_livestream)
+
+@click.group(name="realtime")
+def cli_realtime():
+    """
+    Commands related to realtime data
+    """
+    pass
+
+cli.add_command(cli_realtime)
+cli_realtime.add_command(capture_livestream)
+cli_realtime.add_command(run_watchdog)
 
 if __name__ == '__main__':
     try:

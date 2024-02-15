@@ -8,3 +8,4 @@ python-dotenv
 opencv-contrib-python
 moviepy
 piexif
+watchdog
