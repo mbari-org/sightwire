@@ -1,5 +1,17 @@
 # sightwire Changelog
 
+# [1.1.0](http://bitbucket.org/compas-sw/sightwire/compare/v1.0.0...v1.1.0) (2024-02-15)
+
+
+### Bug Fixes
+
+* correct f-string ([54e94af](http://bitbucket.org/compas-sw/sightwire/commits/54e94af5111bf1249abcc0be926d8165fbc8ec9a))
+
+
+### Features
+
+* added realtime simulated load from livestream with watchdog ([64599fe](http://bitbucket.org/compas-sw/sightwire/commits/64599fee4eef894a4ec41043173a5fab08df79ce))
+
 # 1.0.0 (2024-02-08)
 
 
