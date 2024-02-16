@@ -1,5 +1,12 @@
 # sightwire Changelog
 
+## [1.1.1](http://bitbucket.org/compas-sw/sightwire/compare/v1.1.0...v1.1.1) (2024-02-16)
+
+
+### Bug Fixes
+
+* switch to port 8080 and mantis nginx conf, fix bulk load and other simplification to align with deployment on atuncita ([c52f205](http://bitbucket.org/compas-sw/sightwire/commits/c52f2057c711386aa99de8f46840ee3dcdd2646e))
+
 # [1.1.0](http://bitbucket.org/compas-sw/sightwire/compare/v1.0.0...v1.1.0) (2024-02-15)
 
 
