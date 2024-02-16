@@ -35,4 +35,4 @@ python sightwire load image \
 --camera-type "PROSILICA" \
 --log-position $BASE_DIR/data/logs/oi_survey_1648_USBL_WINFROG.csv \
 --log-depth $BASE_DIR/data/logs/oi_survey_1648_DEPTH_KEARFOTT_COMPAS.csv \
---max-images 1000 --bulk --force
+--bulk --force
