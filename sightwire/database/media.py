@@ -51,10 +51,10 @@ def gen_spec(file_loc: str, type_id: int, section: str, **kwargs) -> dict:
 
     if base_url:
         # Only keep the path past the compas directory
-        # TODO: the /compas path should be put into a config/env variable
-        file_loc_sans_root = file_loc.split('compas/')[-1]
-        file_url = f'http://host.docker.internal/compas/{file_loc_sans_root}'
-        # file_url = f'{base_url}{file_loc_sans_root}'
+        # TODO: the /data path should be put into a config/env variable
+        file_loc_sans_root = file_loc.split('data/')[-1]
+        #file_url = f'http://host.docker.internal/compas/{file_loc_sans_root}' # on mac only
+        file_url = f'http://172.17.0.1:8080/compas/{file_loc_sans_root}'
         debug(f'spec file URL: {file_url}')
         spec = {
             'type': type_id,

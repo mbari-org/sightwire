@@ -6,7 +6,7 @@ from pathlib import Path
 
 import click
 
-from loaders.watchdog import run_watchdog
+from sightwire.loaders.watchdog import run_watchdog
 from sightwire.misc.capture_livestream import capture_livestream
 from sightwire.loaders.image import load_image
 from sightwire.loaders.video import load_video, create_stereo_view

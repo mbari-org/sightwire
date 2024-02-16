@@ -29,14 +29,14 @@ COMPAS_DATA_ROOT=$1
 export PYTHONPATH=$PYTHONPATH:$BASE_DIR
 cd $BASE_DIR
 
-python sightwire extract-log \
+python sightwire convert extract-log \
 --log $COMPAS_DATA_ROOT/DATA/RAW/MBARI/LASS/20231010d1/images/oi_survey_1648/lcmlog.00 \
 --usbl-channel LASS_USBL_LATLONG  \
 --depth-channel LASS_DEPTH \
 --output $BASE_DIR/data/logs \
 --prefix oi_survey_1648
 
-python sightwire extract-log \
+python sightwire convert extract-log \
 --log $COMPAS_DATA_ROOT/DATA/RAW/MBARI/LASS/20231010d1/images/oi_survey_1648/lcmlog.00 \
 --usbl-channel LASS_USBL_LATLONG  \
 --depth-channel LASS_DEPTH \

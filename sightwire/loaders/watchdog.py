@@ -11,11 +11,11 @@ import redis
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-from converters.time_utils import convert_timestamp_to_datetime_16
-from database.common import init_api_project, find_media_type, find_state_type
-from database.data_types import Platform, Camera, Side, StereoImageData
-from loaders.image_utils import create_media
-from logger import info, debug
+from sightwire.converters.time_utils import convert_timestamp_to_datetime_16
+from sightwire.database.common import init_api_project, find_media_type, find_state_type
+from sightwire.database.data_types import Platform, Camera, Side, StereoImageData
+from sightwire.loaders.image_utils import create_media
+from sightwire.logger import info, debug
 
 
 @click.option("--base-url", '-u', type=str, help='base url to the images, e.g. http://localhost:8000/compas/')
@@ -80,11 +80,11 @@ def consume_ts(base_url:str, host: str, token: str, project: str,
     while True: # Loop forever
         left_job = ts.mget(["side=L"], with_labels=True)
         if len(left_job) > 0:
-            debug(f'left_job timestamp: {left_job[0]['TS_PROSILICA_L'][1]}')
+            debug(f"left_job timestamp: {left_job[0]['TS_PROSILICA_L'][1]}")
 
         right_job = ts.mget(["side=R"], with_labels=True)
         if len(right_job) > 0:
-            debug(f'right_job timestamp: {right_job[0]['TS_PROSILICA_R'][1]}')
+            debug(f"right_job timestamp: {right_job[0]['TS_PROSILICA_R'][1]}")
 
         # If both the right and left jobs exist
         if len(right_job) > 0 and len(left_job) > 0:

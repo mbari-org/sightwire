@@ -4,9 +4,9 @@ from typing import List
 import pandas as pd
 import tator
 
-from database.data_types import Platform, Camera, StereoImageData, enum_to_string, Side, ImageData
-from database.media import gen_spec
-from logger import info, err
+from sightwire.database.data_types import Platform, Camera, StereoImageData, enum_to_string, Side, ImageData
+from sightwire.database.media import gen_spec
+from sightwire.logger import info, err
 
 
 def create_state_bulk(project_id: int, api: tator.api, iso_datetime: list, ids_left: list, ids_right: list,
@@ -25,19 +25,20 @@ def create_state_bulk(project_id: int, api: tator.api, iso_datetime: list, ids_l
         left_chunk = ids_left[start_idx:end_idx]
         right_chunk = ids_right[start_idx:end_idx]
         specs = [{
-            "type_id": state_type_id,
+            "type": state_type_id,
             "media_ids": [left, right],
-            "data": asdict(StereoImageData(
-                platform=platform,
-                camera=camera,
+            "frame": 0,
+            "attributes": asdict(StereoImageData(
+                platform=platform.value,
+                camera=camera.value,
                 mission=mission_name,
-                iso_datetime=dt), dict_factory=enum_to_string)}
+                iso_datetime=dt))}
             for dt, left, right in zip(iso_datetime, left_chunk, right_chunk)]
         assert specs is not None, f'Could not create specs for stereo state'
         state_ids += [
             new_id
             for response in tator.util.chunked_create(
-                api.create_media_list, project_id, chunk_size=chunk_size, body=specs
+                api.create_state_list, project_id, chunk_size=chunk_size, body=specs
             )
             for new_id in response.id
         ]
@@ -60,9 +61,9 @@ def create_media_bulk(project_id: int, api: tator.api, df: pd.DataFrame, base_ur
                 type_id=image_type_id,
                 section=section,
                 data=ImageData(
-                    platform=platform,
-                    camera=camera,
-                    side=side,
+                    platform=platform.value,
+                    camera=camera.value,
+                    side=side.value,
                     mission=mission_name,
                     iso_datetime=row.iso_datetime,
                     latitude=row.latitude,
@@ -75,9 +76,9 @@ def create_media_bulk(project_id: int, api: tator.api, df: pd.DataFrame, base_ur
                 type_id=image_type_id,
                 section=section,
                 data=ImageData(
-                    platform=platform,
-                    camera=camera,
-                    side=side,
+                    platform=platform.value,
+                    camera=camera.value,
+                    side=side.value,
                     mission=mission_name,
                     iso_datetime=row.iso_datetime,
                     latitude=row.latitude,
@@ -90,9 +91,9 @@ def create_media_bulk(project_id: int, api: tator.api, df: pd.DataFrame, base_ur
                 type_id=image_type_id,
                 section=section,
                 data=ImageData(
-                    platform=platform,
-                    camera=camera,
-                    side=side,
+                    platform=platform.value,
+                    camera=camera.value,
+                    side=side.value,
                     mission=mission_name,
                     iso_datetime=row.iso_datetime,
                     latitude=row.latitude,

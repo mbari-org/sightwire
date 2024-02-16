@@ -9,3 +9,4 @@ opencv-contrib-python
 moviepy
 piexif
 watchdog
+redis==5.0.1

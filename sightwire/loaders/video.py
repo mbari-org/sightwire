@@ -8,11 +8,11 @@ from pathlib import Path
 import click
 from tator.util import make_multi_stream
 
-import common_args
-from converters.commands import create_video
-from database.common import init_api_project, find_media_type
-from database.data_types import Platform, Camera, VideoData
-from logger import info, err
+from sightwire import common_args
+from sightwire.converters.commands import create_video
+from sightwire.database.common import init_api_project, find_media_type
+from sightwire.database.data_types import Platform, Camera, VideoData
+from sightwire.logger import info, err
 
 
 @click.command("video", help="Load video into the database")

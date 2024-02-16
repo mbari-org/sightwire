@@ -1,8 +1,9 @@
 server_names_hash_bucket_size 128;
+proxy_ignore_client_abort on;
 client_max_body_size 0;
 
 server {
-  listen 8080;
+  listen 80;
 
   server_name localhost 127.0.0.1;
 
@@ -27,7 +28,7 @@ server {
   location ~*phpmyadmin {
     return 404;
   }
-  location ~*recordings/theme/main.css {
+  location ~*recordings/theme/init.css {
     return 404;
   }
   location ~*HNAP1 {
@@ -93,8 +94,7 @@ server {
     proxy_set_header X-Original-URI $request_uri;
     proxy_pass_header Authorization;
   }
-
-location ~ ^/$|^/rest$|^/rest/$|^/static|^/(callback|exchange|refresh|projects|token|organizations|registration|accept|account-profile|password-reset-request|password-reset)|^/\d+/ {
+  location ~ ^/$|^/rest$|^/rest/$|^/static|^/(callback|exchange|refresh|projects|token|organizations|registration|accept|account-profile|password-reset-request|password-reset)|^/\d+/ {
     add_header Cross-Origin-Opener-Policy same-origin;
     add_header Cross-Origin-Embedder-Policy credentialless;
     proxy_pass http://ui:3000;

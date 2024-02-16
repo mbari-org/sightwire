@@ -8,9 +8,9 @@ import cv2
 import sys
 import click
 
-import common_args
-from database.common import init_api_project, find_media_type
-from logger import info, err
+from sightwire import common_args
+from sightwire.database.common import init_api_project, find_media_type
+from sightwire.logger import info, err
 
 
 @click.command("capture", help="Captures images from a live stream to a directory. Run scripts/create_livestream.sh to start a live stream first.")

@@ -18,7 +18,6 @@ fi
 # Copy docker setup files
 cp $SCRIPT_DIR/nginx.conf  $BASE_DIR/tator/
 cp $SCRIPT_DIR/compose.yaml $BASE_DIR/tator/
-cp $SCRIPT_DIR/Dockerfile.nginx $BASE_DIR/tator/
 cp $SCRIPT_DIR/Makefile $BASE_DIR/tator/
 # Overwrite the media.py file with the custom one
 cp $SCRIPT_DIR/media.py $BASE_DIR/tator/api/main/rest/media.py

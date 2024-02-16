@@ -14,7 +14,7 @@ from pathlib import Path
 from moviepy.editor import ImageSequenceClip
 
 from sightwire.logger import info
-from .time_utils import convert_timestamp_to_datetime_16, convert_timestamp_to_datetime_10
+from sightwire.converters.time_utils import convert_timestamp_to_datetime_16, convert_timestamp_to_datetime_10
 
 
 def image_to_mp4(image_path: str, output_mp4: str, demosaic: bool = False, num_images=None) -> List[Tuple[datetime, str]]:
@@ -28,6 +28,9 @@ def image_to_mp4(image_path: str, output_mp4: str, demosaic: bool = False, num_i
     """
     image_path = Path(image_path)
     images = sorted(image_path.glob("*.tif"))
+    images += sorted(image_path.glob("*.png"))
+    images += sorted(image_path.glob("*.jpg"))
+    images += sorted(image_path.glob("*.jpeg"))
     timestamps = []
 
     acceptable_suffixes = ['.jpg', '.jpeg', '.png']

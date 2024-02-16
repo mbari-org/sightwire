@@ -7,12 +7,12 @@ from pathlib import Path
 
 import click
 
-import common_args
-from converters.time_utils import assign_nearest
-from database.common import init_api_project, find_media_type, find_state_type
-from database.data_types import Platform, Camera, Side, StereoImageData
-from loaders.image_utils import create_state_bulk, create_media_bulk, create_media
-from logger import err, info
+from sightwire import common_args
+from sightwire.converters.time_utils import assign_nearest
+from sightwire.database.common import init_api_project, find_media_type, find_state_type
+from sightwire.database.data_types import Platform, Camera, Side, StereoImageData
+from sightwire.loaders.image_utils import create_state_bulk, create_media_bulk, create_media
+from sightwire.logger import err, info
 
 
 @click.command("image", help="Load sequence of images into the database")

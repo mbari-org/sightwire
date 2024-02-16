@@ -1,16 +1,10 @@
 FROM nginx:1.23.3
 
-ARG USER_ID
-ARG GROUP_ID
-
-# MBARI docker user
-RUN groupadd -r --gid $GROUP_ID docker && \
-    useradd -r --uid $USER_ID -g docker docker_user && \
+RUN groupadd -r --gid 1001 ops && \
+    useradd -r --uid 1001 -g ops ops && \
     chmod -R 777 /var/cache/nginx && \
     chmod -R 777 /var/run
 
-USER docker_user
+USER ops
 EXPOSE 80 8080 443
-
-# Start in the foreground with a specific file
-CMD ["nginx", "-g", "daemon off;", "-c", "/etc/nginx/default.conf"];
+CMD ["nginx", "-g", "daemon off;"];

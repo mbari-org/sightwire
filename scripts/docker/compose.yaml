@@ -22,21 +22,20 @@ services:
       context: .
       dockerfile: Dockerfile.nginx
       args:
-        - USER_ID=${USER_ID}
+        - USER_ID=${USER_ID} 
         - GROUP_ID=${GROUP_ID}
     container_name: nginx
     depends_on:
       - gunicorn
     ports:
-      - "80:80"
+      - "8080:8080"
     env_file:
       - ./.env
     networks:
-      - private
       - public
-    privileged: true
+      - private
     volumes:
-      - ./nginx.conf:/etc/nginx/default.conf
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ${COMPAS_DIR}:/compas
       - ${DATA_DIR}/media:/media
     restart: always
