@@ -72,13 +72,13 @@ def create_types(tator_api: TatorApi, project: int) -> None:
                 "name": "latitude",
                 "dtype": "float",
                 "visible": True,
-                "default": 36.6484
+                "default": 0.0
             },
             {
                 "name": "longitude",
                 "dtype": "float",
                 "visible": True,
-                "default": 121.8969
+                "default": 0.0
             },
             {
                 "name": "platform",
