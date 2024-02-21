@@ -1,5 +1,12 @@
 # sightwire Changelog
 
+# [1.2.0](http://bitbucket.org/compas-sw/sightwire/compare/v1.1.1...v1.2.0) (2024-02-21)
+
+
+### Features
+
+* added realtime capture, separate volume map to one or more mounts independent of core tator stack, and wait for file size to account for slow network traffic to capture images ([b4a14ca](http://bitbucket.org/compas-sw/sightwire/commits/b4a14cab772ea6a217e4f561924e3ba773e66753))
+
 ## [1.1.1](http://bitbucket.org/compas-sw/sightwire/compare/v1.1.0...v1.1.1) (2024-02-16)
 
 
