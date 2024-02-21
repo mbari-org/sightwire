@@ -7,7 +7,7 @@ import os
 
 from sightwire.logger import info
 
-default_training_prefix = 'training'
+default_training_prefix = 'sightwire'
 default_config_ini = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.ini')
 
 

@@ -1,12 +1,13 @@
 # sightwire, Apache-2.0 license
-# Filename: loaders/load_image.py
-# Description: Load images references with metadata to the database
+# Filename: loaders/image.py
+# Description: Load images references with optional metadata to the database
 
 from dataclasses import asdict
 from pathlib import Path
 
 import click
 
+from common_args import parse_vol_map
 from sightwire import common_args
 from sightwire.converters.time_utils import assign_nearest
 from sightwire.database.common import init_api_project, find_media_type, find_state_type
@@ -20,7 +21,8 @@ from sightwire.logger import err, info
 @common_args.token
 @common_args.project
 @common_args.force
-@click.option("--base-url", '-u', type=str, help='base url to the images, e.g. http://localhost:8000/compas/')
+@common_args.base_url
+@common_args.vol_map
 @click.option("--input", '-i', type=Path, help='path to the image directory or a single image file')
 @click.option("--input-left", '-l', type=Path, help='path to the left image directory')
 @click.option("--input-right", '-r', type=Path, help='path to the right image directory')
@@ -33,13 +35,14 @@ from sightwire.logger import err, info
 @click.option("--mission-name", type=str, required=True)
 @click.option("--bulk", is_flag=True, help="Bulk load. CAUTION: this does not verify if the images are already loaded")
 @click.option("--max-images", required=False, type=int, help="Max number of images to load")
-def load_image(base_url: str, input: Path, input_left: Path, input_right: Path, log_depth: Path, log_position: Path,
+def load_image(base_url: str, vol_map:str, input: Path, input_left: Path, input_right: Path, log_depth: Path, log_position: Path,
                host: str, token: str, project: str,
                platform_type: Platform, camera_type: Camera, mission_name: str, bulk: bool,
                force: bool, max_images: int):
     """
     Load image(s) from a local file system to the database
-    :param base_url: Base url to the images, e.g. http://atuncita/compas/
+    :param base_url: Base url to the images, e.g. http://localhost/compas/
+    :param vol_map: String to parse with key:value pairs that represent the volume mappings outside docker:inside docker. Used to create a correct URL for loading
     :param mission_name:
     :param camera_type:
     :param platform_type:
@@ -72,6 +75,8 @@ def load_image(base_url: str, input: Path, input_left: Path, input_right: Path, 
     if not log_position.exists():
         err(f'Could not find {log_position}')
         return
+
+    _vol_map = parse_vol_map(vol_map)
 
     stereo = False
     if input_left and input_right:
@@ -145,22 +150,22 @@ def load_image(base_url: str, input: Path, input_left: Path, input_right: Path, 
 
         if bulk:
             if stereo:
-                left_ids = create_media_bulk(project.id, api, df, base_url, image_type.id, section, Side.LEFT,
+                left_ids = create_media_bulk(project.id, api, df, base_url, _vol_map, image_type.id, section, Side.LEFT,
                                              platform_type, camera_type, mission_name)
-                right_ids = create_media_bulk(project.id, api, df, base_url, image_type.id, section, Side.RIGHT,
+                right_ids = create_media_bulk(project.id, api, df, base_url, _vol_map, image_type.id, section, Side.RIGHT,
                                               platform_type, camera_type, mission_name)
                 iso_datetime = df['iso_datetime'].tolist()
                 create_state_bulk(project.id, api, iso_datetime, left_ids, right_ids, ste_state_type.id, platform_type,
                                   camera_type, mission_name)
             else:
-                create_media_bulk(project.id, api, df, base_url, image_type.id, section, Side.UNKNOWN, platform_type,
+                create_media_bulk(project.id, api, df, base_url, _vol_map, image_type.id, section, Side.UNKNOWN, platform_type,
                                   camera_type, mission_name)
         else:
             for index, row in df.iterrows():
                 if stereo:
-                    left_id = create_media(project.id, api, row, base_url, image_type.id, section, Side.LEFT,
+                    left_id = create_media(project.id, api, row, base_url, _vol_map, image_type.id, section, Side.LEFT,
                                            platform_type, camera_type, mission_name)
-                    right_id = create_media(project.id, api, row, base_url, image_type.id, section, Side.RIGHT,
+                    right_id = create_media(project.id, api, row, base_url, _vol_map, image_type.id, section, Side.RIGHT,
                                             platform_type, camera_type, mission_name)
 
                     # Add the left and right images to a stereo state
@@ -178,5 +183,5 @@ def load_image(base_url: str, input: Path, input_left: Path, input_right: Path, 
                         })
                     info(f'Created stereo state {response.id} for media LEFT {left_id} and RIGHT {right_id}')
                 else:
-                    create_media(project.id, api, row, base_url, image_type.id, section, Side.UNKNOWN, platform_type,
+                    create_media(project.id, api, row, base_url, _vol_map, image_type.id, section, Side.UNKNOWN, platform_type,
                                  camera_type, mission_name)

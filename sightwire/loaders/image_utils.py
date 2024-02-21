@@ -6,7 +6,7 @@ import tator
 
 from sightwire.database.data_types import Platform, Camera, StereoImageData, enum_to_string, Side, ImageData
 from sightwire.database.media import gen_spec
-from sightwire.logger import info, err
+from sightwire.logger import info, err, debug
 
 
 def create_state_bulk(project_id: int, api: tator.api, iso_datetime: list, ids_left: list, ids_right: list,
@@ -19,6 +19,7 @@ def create_state_bulk(project_id: int, api: tator.api, iso_datetime: list, ids_l
     state_ids = []
     chunk_size = 500  # Number of pairs to load at a time
     num_chunks = len(ids_left) // chunk_size + (len(ids_right) % chunk_size > 0)
+    frame_start = iso_datetime[0].timestamp()
     for i in range(num_chunks):
         start_idx = i * chunk_size
         end_idx = (i + 1) * chunk_size
@@ -35,6 +36,7 @@ def create_state_bulk(project_id: int, api: tator.api, iso_datetime: list, ids_l
                 iso_datetime=dt))}
             for dt, left, right in zip(iso_datetime, left_chunk, right_chunk)]
         assert specs is not None, f'Could not create specs for stereo state'
+        info(f'Creating {len(specs)} stereo states')
         state_ids += [
             new_id
             for response in tator.util.chunked_create(
@@ -45,7 +47,7 @@ def create_state_bulk(project_id: int, api: tator.api, iso_datetime: list, ids_l
         info(f"Created {len(state_ids)} stereo states")
 
 
-def create_media_bulk(project_id: int, api: tator.api, df: pd.DataFrame, base_url: str, image_type_id: int,
+def create_media_bulk(project_id: int, api: tator.api, df: pd.DataFrame, base_url: str, vol_map:dict, image_type_id: int,
                       section: str,side: Side, platform: Platform, camera: Camera, mission_name: str) -> List[int]:
     chunk_size = 500  # Number of images to load at a time
     num_chunks = len(df) // chunk_size + (len(df) % chunk_size > 0)
@@ -69,7 +71,7 @@ def create_media_bulk(project_id: int, api: tator.api, df: pd.DataFrame, base_ur
                     latitude=row.latitude,
                     longitude=row.longitude,
                     depth=row.depth),
-                base_url=base_url) for key, row in df_chunk.iterrows()]
+                base_url=base_url, vol_map=vol_map) for key, row in df_chunk.iterrows()]
         if side == Side.RIGHT:
             specs = [gen_spec(
                 file_loc=row.right,
@@ -84,7 +86,7 @@ def create_media_bulk(project_id: int, api: tator.api, df: pd.DataFrame, base_ur
                     latitude=row.latitude,
                     longitude=row.longitude,
                     depth=row.depth),
-                base_url=base_url) for key, row in df_chunk.iterrows()]
+                base_url=base_url, vol_map=vol_map) for key, row in df_chunk.iterrows()]
         if side == Side.UNKNOWN:
             specs = [gen_spec(
                 file_loc=row.image,
@@ -99,7 +101,7 @@ def create_media_bulk(project_id: int, api: tator.api, df: pd.DataFrame, base_ur
                     latitude=row.latitude,
                     longitude=row.longitude,
                     depth=row.depth),
-                base_url=base_url) for key, row in df_chunk.iterrows()]
+                base_url=base_url, vol_map=vol_map) for key, row in df_chunk.iterrows()]
         assert specs is not None, f'Could not create specs for {side} images'
         media_ids += [
             new_id
@@ -113,7 +115,7 @@ def create_media_bulk(project_id: int, api: tator.api, df: pd.DataFrame, base_ur
     return media_ids
 
 
-def create_media(project_id: int, api: tator.api, row: pd.Series, base_url: str, image_type_id: int, section: str,
+def create_media(project_id: int, api: tator.api, row: pd.Series, base_url: str, vol_map: dict, image_type_id: int, section: str,
                  side: Side, platform: Platform, camera: Camera, mission_name: str) -> int:
     image = None
     try:
@@ -133,21 +135,24 @@ def create_media(project_id: int, api: tator.api, row: pd.Series, base_url: str,
                             type_id=image_type_id,
                             section=section,
                             data=image_data,
-                            base_url=base_url)
+                            base_url=base_url,
+                            vol_map=vol_map)
         if side == Side.RIGHT:
             image = row.right
             spec = gen_spec(file_loc=row.right,
                             type_id=image_type_id,
                             section=section,
                             data=image_data,
-                            base_url=base_url)
+                            base_url=base_url,
+                            vol_map=vol_map)
         if side == Side.UNKNOWN:
             image = row.image
             spec = gen_spec(file_loc=row.image,
                             type_id=image_type_id,
                             section=section,
                             data=image_data,
-                            base_url=base_url)
+                            base_url=base_url,
+                            vol_map=vol_map)
         assert spec is not None, f'Could not create spec for {side} image'
         response = api.create_media_list(project_id, body=spec, async_req=False)
         return response.id

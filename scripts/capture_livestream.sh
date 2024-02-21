@@ -1,25 +1,25 @@
 #!/usr/bin/env bash
 # Capture a live stream and save images timestamped with the current time
 # This is useful for testing real-time image capture from LCM messages
-# Usage: ./capture_livestream.sh localhost /path/to/left/images /path/to/right/images
-set -x
+# Usage: ./capture_livestream.sh
+#set -x
 # Get the script directory and its parent
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BASE_DIR="$(cd "$(dirname "${SCRIPT_DIR}/../.." )" && pwd )"
-
-# Should be exactly 3 arguments
-if [ ! $# -eq 3 ]; then
-    echo "No arguments supplied.  Usage: ./capture_livestream.sh localhost $PWD/tator/compas/P_R_PNG_SIM $PWD/tator/compas/P_L_PNG_SIM/"
-    exit 1
-fi
-HOST_NAME=$1
-OUTPUT_DIR_LEFT=$2
-OUTPUT_DIR_RIGHT=$3
-
 export PYTHONPATH=$PYTHONPATH:$BASE_DIR
-# Useful for quick testing
-#python sightwire realtime capture -u rtmp://$HOST_NAME:1935/streaml -o $OUTPUT_DIR_LEFT --max-images 100 &
-#python sightwire realtime capture -u rtmp://$HOST_NAME:1935/streamr -o $OUTPUT_DIR_RIGHT --max-images 100 &
+COMPAS_DATA_ROOT=/Users/dcline/data
+
+# Get the local host IP address in the 192 range, excluding the 255 subnet
+HOST_IP=$(ifconfig | tail -n +2 | grep -o '192\.168\.[0-9]\+\.[0-9]\+' | grep -v '192\.168\.0\.255' | grep -v '^$')
+# Make sure we can reach it, otherwise use fail
+rc=$(curl -s -o /dev/null $HOST_IP)
+if [ $rc -ne 0 ]; then
+  echo "Cannot reach $HOST_IP"
+  exit 1
+fi
+
+OUTPUT_DIR_LEFT=$COMPAS_DATA_ROOT/realtime/oi_survey_1648/P_L_PNG
+OUTPUT_DIR_RIGHT=$COMPAS_DATA_ROOT/realtime/oi_survey_1648/P_R_PNG
 # Capture a live stream and save images timestamped with the current time
-python sightwire realtime capture -u rtmp://$HOST_NAME:1935/streaml -o $OUTPUT_DIR_LEFT &
-python sightwire realtime capture -u rtmp://$HOST_NAME:1935/streamr -o $OUTPUT_DIR_RIGHT &
+python sightwire realtime capture -u rtmp://$HOST_IP:1935/streaml -o $OUTPUT_DIR_LEFT &
+python sightwire realtime capture -u rtmp://$HOST_IP:1935/streamr -o $OUTPUT_DIR_RIGHT &

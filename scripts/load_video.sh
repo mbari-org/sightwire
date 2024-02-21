@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-set -x
+# Loads video in bulk
+# This is useful for testing video load
+# Usage: ./load_video.sh
+#set -x
 # Get the script directory and its parent
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BASE_DIR="$(cd "$(dirname "${SCRIPT_DIR}/../.." )" && pwd )"
-
 
 export PYTHONPATH=$PYTHONPATH:$BASE_DIR
 

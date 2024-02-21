@@ -46,15 +46,21 @@ def gen_spec(file_loc: str, type_id: int, section: str, **kwargs) -> dict:
     attributes = {}
     data = kwargs.get('data')
     base_url = kwargs.get('base_url')  # The base URL to the file if hosted. If None, the file will be uploaded.
+    vol_map = kwargs.get('vol_map') # Docker volume mount maps. key:value pairs that specify the external/internal mapping for creating a url
     if data:
-        attributes = asdict(data)#, dict_factory=enum_to_string)
+        attributes = asdict(data)
 
     if base_url:
-        # Only keep the path past the compas directory
-        # TODO: the /data path should be put into a config/env variable
-        file_loc_sans_root = file_loc.split('data/')[-1]
-        #file_url = f'http://host.docker.internal/compas/{file_loc_sans_root}' # on mac only
-        file_url = f'http://172.17.0.1:8080/compas/{file_loc_sans_root}'
+        file_url = None
+        for key, value in vol_map.items():
+            if key in file_loc:
+                file_loc_sans_root = file_loc.split(key)[-1]
+                file_url = f'{base_url}{value}{file_loc_sans_root}'
+                break
+        if file_url is None:
+            err(f'Could not find volume map for {file_loc} in {vol_map}')
+            return {}
+
         debug(f'spec file URL: {file_url}')
         spec = {
             'type': type_id,
@@ -82,6 +88,7 @@ def gen_spec(file_loc: str, type_id: int, section: str, **kwargs) -> dict:
             'reference_only': 0,
         }
 
+    debug(spec)
     return spec
 
 
@@ -275,13 +282,13 @@ def create_types(tator_api: TatorApi, project: int) -> None:
                 "name": "latitude",
                 "dtype": "float",
                 "visible": True,
-                "default": 36.6484
+                "default": 0.0
             },
             {
                 "name": "longitude",
                 "dtype": "float",
                 "visible": True,
-                "default": 121.8969
+                "default": 0.0
             },
             {
                 "name": "platform",

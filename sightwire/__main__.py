@@ -6,7 +6,7 @@ from pathlib import Path
 
 import click
 
-from sightwire.loaders.watchdog import run_watchdog
+from sightwire.loaders.watchdog import run_watchdog, load_watchdog
 from sightwire.misc.capture_livestream import capture_livestream
 from sightwire.loaders.image import load_image
 from sightwire.loaders.video import load_video, create_stereo_view
@@ -79,6 +79,7 @@ def cli_realtime():
 cli.add_command(cli_realtime)
 cli_realtime.add_command(capture_livestream)
 cli_realtime.add_command(run_watchdog)
+cli_realtime.add_command(load_watchdog)
 
 if __name__ == '__main__':
     try:

@@ -10,3 +10,6 @@ export GROUP_ID=$(id -g)
 
 # Stop tator docker containers
 cd $BASE_DIR/tator && make clean
+
+# Stop the compas media server
+docker stop nginx_compas

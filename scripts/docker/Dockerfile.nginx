@@ -1,10 +1,13 @@
 FROM nginx:1.23.3
 
-RUN groupadd -r --gid 1001 ops && \
-    useradd -r --uid 1001 -g ops ops && \
+ARG GROUP_ID=1001
+ARG USER_ID=1001
+
+RUN groupadd -r --gid $GROUP_ID ops && \
+    useradd -r --uid $USER_ID -g ops ops && \
     chmod -R 777 /var/cache/nginx && \
     chmod -R 777 /var/run
 
 USER ops
-EXPOSE 80 8080 443
+EXPOSE 80 8080 8081 443
 CMD ["nginx", "-g", "daemon off;"];

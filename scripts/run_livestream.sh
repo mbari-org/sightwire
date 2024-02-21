@@ -1,24 +1,26 @@
 #!/usr/bin/env bash
 # Create a live stream from a set of images using ffmpeg
 # This is useful for testing real-time image capture
-# Usage: ./run_livestream.sh localhost /mnt/compas
+# Usage: ./run_livestream.sh
 #set -x
 # Get the script directory and its parent
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BASE_DIR="$(cd "$(dirname "${SCRIPT_DIR}/../.." )" && pwd )"
 
-# Should be at least 2 arguments
-if [ ! $# -eq 2 ]; then
-    echo "No arguments supplied.  Usage: ./run_livestream.sh localhost /mnt/compas"
-    exit 1
+# Get the local host IP address in the 192 range, excluding the 255 subnet
+HOST_IP=$(ifconfig | tail -n +2 | grep -o '192\.168\.[0-9]\+\.[0-9]\+' | grep -v '192\.168\.0\.255' | grep -v '^$')
+# Make sure we can reach it, otherwise use fail
+rc=$(curl -s -o /dev/null $HOST_IP)
+if [ $rc -ne 0 ]; then
+  echo "Cannot reach $HOST_IP"
+  exit 1
 fi
-HOST_NAME=$1
-COMPAS_DATA_ROOT=$2
 
 export PYTHONPATH=$PYTHONPATH:$BASE_DIR
-#
+
+COMPAS_DATA_ROOT=/Users/dcline/data
 # The path to store streamable video files
-MP4_VID_DIR=$BASE_DIR/tator/compas_live/live
+MP4_VID_DIR=$COMPAS_DATA_ROOT/compas_live/live
 
 mkdir -p $MP4_VID_DIR
 
@@ -42,8 +44,8 @@ MP4_VID_L=$MP4_VID_DIR/PROSILICA_L.mp4
 MP4_VID_R=$MP4_VID_DIR/PROSILICA_R.mp4
 while true;
 do
-  echo "Restarting live stream" rtmp://$HOST_NAME:1935/streaml and rtmp://$HOST_NAME:1935/streamr
+  echo "Restarting live stream" rtmp://$HOST_IP:1935/streaml and rtmp://$HOST_IP:1935/streamr
   # Right it slightly longer, so background the left stream and wait for the right to finish to simulate sync
-  ffmpeg -v error -re -i $MP4_VID_L -c copy -f flv rtmp://$HOST_NAME:1935/streaml &
-  ffmpeg -v error -re -i $MP4_VID_R -c copy -f flv rtmp://$HOST_NAME:1935/streamr
+  ffmpeg -v error -re -i $MP4_VID_L -c copy -f flv rtmp://$HOST_IP:1935/streaml &
+  ffmpeg -v error -re -i $MP4_VID_R -c copy -f flv rtmp://$HOST_IP:1935/streamr
 done
