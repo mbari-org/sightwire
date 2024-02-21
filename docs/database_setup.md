@@ -1,15 +1,30 @@
 
 # Setting up TATOR database
 
-This will start a local instance of the TATOR database and UI with a volume mount to the compas data directory. 
+This will start a local instance of the TATOR database and UI with a 
+volume mount to a /data directory. 
 
 ## Prerequisites
-Setup the path to the compas data directory in the .env file.  This is the directory where the compas data is stored.  
 
-in .env file, e.g.:
+Setup the volume mount point(s) for images.  For example, to mount
+/home/ops/data to /data.  Additional blocks for volume mounts can be added here.
+This specifies how to image data is served as a URL in the container.
 
-```.env
-COMPAS_DIR=/mnt/compas
+In ./scripts/docker/nginx_compas.conf, add the /data block
+```text
+location /data {
+    alias /data;
+    autoindex on;
+    ...
+  }
+```
+and in ./scripts/docker/docker_start.sh, adjust the volume map.
+Add additional volumes mounts as needed with extra -v mounts.
+
+```text 
+docker run --rm -p 8081:8081 \
+  -v /home/ops/data:/data 
+  ...
 ```
  
 Start the TATOR database and UI with the following command:
@@ -28,12 +43,16 @@ When this completes, you should see something like the following output:
  ⠿ Container minio              Running                                                                                                                                                                                                                                                                                                                                                                                                                                    0.0s
  ⠿ Container redis              Running                                                                                                                                                                                                                                                                                                                                                                                                                                    0.0s
  ⠿ Container create-bucket      Started                                                                                                                                                                                                                                                                                                                                                                                                                                    1.1s
- ⠿ Container image-worker       Started                                                                                                                                                                                                                                                                                                                                                                                                                                    1.3s
+ ⠿ Container image-worker1      Started                                                                                                                                                                                                                                                                                                                                                                                                                                   1.1s
+ ⠿ Container image-worker2      Started                                                                                                                                                                                                                                                                                                                                                                                                                                    1.1s
+ ⠿ Container image-worker3      Started                                                                                                                                                                                                                                                                                                                                                                                                                                    1.1s
+ ⠿ Container image-worker4      Started                                                                                                                                                                                                                                                                                                                                                                                                                       1.1s
+ ⠿ Container image-worker5      Started                                                                                                                                                                                                                                                                                                                                                                                                                                                  1.3s
  ⠿ Container db-worker          Started                                                                                                                                                                                                                                                                                                                                                                                                                                    1.7s
  ⠿ Container transcode-worker   Started                                                                                                                                                                                                                                                                                                                                                                                                                                    1.5s
  ⠿ Container transcode          Started                                                                                                                                                                                                                                                                                                                                                                                                                                    1.1s
  ⠿ Container gunicorn           Running                                                                                                                                                                                                                                                                                                                                                                                                                                    0.0s
- ⠿ Container nginx              Started                                                                                                                                                                                                                                                                                                                                                                                                                                    2.0s
+ ⠿ Container nginx-tator        Started                                                                                                                                                                                                                                                                                                                                                                                                                                    2.0s
  ⠿ Container gunicorn-cron      Started                                                                                                                                                                                                                                                                                                                                                                                                                                    1.9s
  ⠿ Container migrate            Started
  ```
