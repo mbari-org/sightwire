@@ -26,9 +26,9 @@ from sightwire.logger import err, info
 @click.option("--input", '-i', type=Path, help='path to the image directory or a single image file')
 @click.option("--input-left", '-l', type=Path, help='path to the left image directory')
 @click.option("--input-right", '-r', type=Path, help='path to the right image directory')
-@click.option("--log-depth", type=Path,
+@click.option("--log-depth", type=Path, required=True,
               help='path to the log with exported compass datetime/depth from the lcm logs')
-@click.option("--log-position", type=Path,
+@click.option("--log-position", type=Path, required=True,
               help='path to the log with exported USBL datetime/lat/lon from the lcm logs')
 @click.option("--platform-type", type=Platform, default=Platform.MINI_ROV, required=True)
 @click.option("--camera-type", type=Camera, default=Camera.FLIR, required=True)
