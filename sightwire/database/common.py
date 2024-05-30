@@ -22,10 +22,10 @@ def init_api_project(host: str, token: str, project: str) -> (TatorApi, tator.mo
 
     info(f'Searching for project {project}.')
     tator_project = find_project(api, project)
-    info(f'Found project {tator_project.name} with id {tator_project.id}')
     if tator_project is None:
-        raise f'Could not find project {project}'
+        raise Exception(f'Could not find project {project}')
 
+    info(f'Found project {tator_project.name} with id {tator_project.id}')
     return api, tator_project
 
 
